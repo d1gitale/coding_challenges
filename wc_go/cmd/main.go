@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 )
@@ -33,12 +34,25 @@ func main() {
 
 		fmt.Printf("%d %s\n", size, fn)
 	case *countLines:
-		data, err := os.ReadFile(fn)
-		if err != nil {
-			log.Fatalf("failed to read file %s: %v", fn, err)
-		}
-		lines := bytes.Count(data, []byte("\n"))
+		var (
+			err  error
+			read int
+		)
+		buf := make([]byte, 32*1024)
+		lines := 0
+		for {
+			read, err = file.Read(buf)
+			if err != nil {
+				break
+			}
 
-		fmt.Printf("%d %s\n", lines, fn)
+			lines += bytes.Count(buf[:read], []byte("\n"))
+		}
+
+		if err == io.EOF {
+			fmt.Printf("%d %s\n", lines, fn)
+		} else {
+			log.Fatalf("unexpected error: %v", err)
+		}
 	}
 }
