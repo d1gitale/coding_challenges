@@ -19,6 +19,12 @@ func main() {
 	countChars := flag.Bool("m", false, "wrd -m test.txt")
 	flag.Parse()
 
+	if flag.NFlag() == 0 {
+		*countBytes = true
+		*countLines = true
+		*countWords = true
+	}
+
 	fn := flag.Arg(0)
 
 	file, err := os.Open(fn)
@@ -31,16 +37,19 @@ func main() {
 		log.Fatalf("unexpected error: %v", err)
 	}
 
-	var read int
+	var (
+		read   int
+		output string
+	)
 
 	buf := make([]byte, 32*1024)
 
-	switch {
-	case *countBytes:
+	if *countBytes {
 		size := fileStat.Size()
 
-		fmt.Printf("%d %s\n", size, fn)
-	case *countLines:
+		output += fmt.Sprintf("%d ", size)
+	}
+	if *countLines {
 		lines := 0
 		for {
 			read, err = file.Read(buf)
@@ -52,11 +61,14 @@ func main() {
 		}
 
 		if err == io.EOF {
-			fmt.Printf("%d %s\n", lines, fn)
+			output += fmt.Sprintf("%d ", lines)
 		} else {
 			log.Fatalf("unexpected error: %v", err)
 		}
-	case *countWords:
+	}
+	if *countWords {
+		file.Seek(0, io.SeekStart)
+
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanWords)
 
@@ -69,8 +81,11 @@ func main() {
 			log.Fatalf("failed to read the file %s: %v", fn, err)
 		}
 
-		fmt.Printf("%d %s\n", words, fn)
-	case *countChars:
+		output += fmt.Sprintf("%d ", words)
+	}
+	if *countChars {
+		file.Seek(0, io.SeekStart)
+		// TODO: change the implementation to chunk-based reading
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanRunes)
 
@@ -83,6 +98,9 @@ func main() {
 			log.Fatalf("failed to read the file %s: %v", fn, err)
 		}
 
-		fmt.Printf("%d %s\n", chars, fn)
+		output += fmt.Sprintf("%d ", chars)
 	}
+
+	output += fmt.Sprintf("%s\n", fn)
+	fmt.Print(output)
 }
