@@ -16,6 +16,7 @@ func main() {
 	countBytes := flag.Bool("c", false, "wrd -c test.txt")
 	countLines := flag.Bool("l", false, "wrd -l test.txt")
 	countWords := flag.Bool("w", false, "wrd -w test.txt")
+	countChars := flag.Bool("m", false, "wrd -m test.txt")
 	flag.Parse()
 
 	fn := flag.Arg(0)
@@ -69,5 +70,19 @@ func main() {
 		}
 
 		fmt.Printf("%d %s\n", words, fn)
+	case *countChars:
+		scanner := bufio.NewScanner(file)
+		scanner.Split(bufio.ScanRunes)
+
+		chars := 0
+		for scanner.Scan() {
+			chars++
+		}
+
+		if err := scanner.Err(); err != nil {
+			log.Fatalf("failed to read the file %s: %v", fn, err)
+		}
+
+		fmt.Printf("%d %s\n", chars, fn)
 	}
 }
