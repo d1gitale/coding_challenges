@@ -25,16 +25,22 @@ func main() {
 		*countWords = true
 	}
 
-	fn := flag.Arg(0)
+	var (
+		file *os.File
+		fn   string
+		err  error
+	)
+	if flag.NArg() != 0 {
+		fn := flag.Arg(0)
 
-	file, err := os.Open(fn)
-	if err != nil {
-		log.Fatalf("failed to open file %s: %v", fn, err)
-	}
-	defer file.Close()
-	fileStat, err := file.Stat()
-	if err != nil {
-		log.Fatalf("unexpected error: %v", err)
+		file, err = os.Open(fn)
+		if err != nil {
+			log.Fatalf("failed to open file %s: %v", fn, err)
+		}
+		defer file.Close()
+	} else {
+		file = os.Stdin
+		fn = "stdin"
 	}
 
 	var (
@@ -45,11 +51,26 @@ func main() {
 	buf := make([]byte, 32*1024)
 
 	if *countBytes {
-		size := fileStat.Size()
+		size := 0
+		var n int
 
-		output += fmt.Sprintf("%d ", size)
+		for {
+			n, err = file.Read(buf)
+			if err != nil {
+				break
+			}
+
+			size += n
+		}
+
+		if err == io.EOF {
+			output += fmt.Sprintf("%d ", size)
+		} else {
+			log.Fatalf("failed to read file %s: %v", fn, err)
+		}
 	}
 	if *countLines {
+		file.Seek(0, io.SeekStart)
 		lines := 0
 		for {
 			read, err = file.Read(buf)
@@ -63,7 +84,7 @@ func main() {
 		if err == io.EOF {
 			output += fmt.Sprintf("%d ", lines)
 		} else {
-			log.Fatalf("unexpected error: %v", err)
+			log.Fatalf("failed to read file %s: %v", fn, err)
 		}
 	}
 	if *countWords {
