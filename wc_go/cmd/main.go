@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"wc/internal"
 )
 
 func main() {
@@ -31,7 +32,7 @@ func main() {
 		err  error
 	)
 	if flag.NArg() != 0 {
-		fn := flag.Arg(0)
+		fn = flag.Arg(0)
 
 		file, err = os.Open(fn)
 		if err != nil {
@@ -51,26 +52,16 @@ func main() {
 	buf := make([]byte, 32*1024)
 
 	if *countBytes {
-		size := 0
-		var n int
-
-		for {
-			n, err = file.Read(buf)
-			if err != nil {
-				break
-			}
-
-			size += n
-		}
-
-		if err == io.EOF {
-			output += fmt.Sprintf("%d ", size)
+		size, err := internal.CountBytes(buf, file)
+		if err != nil {
+			log.Fatalf("failed to count bytes: %v", err)
 		} else {
-			log.Fatalf("failed to read file %s: %v", fn, err)
+			output += fmt.Sprintf("%d ", size)
 		}
 	}
 	if *countLines {
 		file.Seek(0, io.SeekStart)
+
 		lines := 0
 		for {
 			read, err = file.Read(buf)
@@ -106,7 +97,7 @@ func main() {
 	}
 	if *countChars {
 		file.Seek(0, io.SeekStart)
-		// TODO: change the implementation to chunk-based reading
+
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanRunes)
 
