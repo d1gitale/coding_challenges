@@ -8,7 +8,7 @@ import (
 
 func TestByteCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
-	file, err := os.Open("tests/test.txt")
+	file, err := os.Open("../tests/test.txt")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -27,7 +27,7 @@ func TestByteCounting(t *testing.T) {
 
 func TestLineCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
-	file, err := os.Open("tests/test.txt")
+	file, err := os.Open("../tests/test.txt")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
