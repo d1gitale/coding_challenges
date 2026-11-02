@@ -28,3 +28,7 @@ func CountBytes(buf []byte, file *os.File) (int, error) {
 		return 0, fmt.Errorf("failed to read file %s: %v", file.Name(), err)
 	}
 }
+
+func CountLines(buf []byte, file *os.File) (int, error) {
+	return 0, nil
+}

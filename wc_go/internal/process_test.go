@@ -6,7 +6,7 @@ import (
 	"wc/internal"
 )
 
-func ByteCountingTest(t *testing.T) {
+func ByteCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
 	file, err := os.Open("tests/test.txt")
 	if err != nil {
@@ -22,5 +22,24 @@ func ByteCountingTest(t *testing.T) {
 
 	if expected != got {
 		t.Fatalf("bytes counted incorrectly: expected %d, got %d", expected, got)
+	}
+}
+
+func LineCountingTest(t *testing.T) {
+	buf := make([]byte, 32*1024)
+	file, err := os.Open("tests/test.txt")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// wc -l tests/test.txt
+	expected := 7145
+	got, err := internal.CountLines(buf, file)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if expected != got {
+		t.Fatalf("lines counted incorrectly: expected %d, got %d", expected, got)
 	}
 }
