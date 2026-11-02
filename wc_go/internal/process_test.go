@@ -6,7 +6,7 @@ import (
 	"wc/internal"
 )
 
-func ByteCounting(t *testing.T) {
+func TestByteCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
 	file, err := os.Open("tests/test.txt")
 	if err != nil {
@@ -25,7 +25,7 @@ func ByteCounting(t *testing.T) {
 	}
 }
 
-func LineCountingTest(t *testing.T) {
+func TestLineCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
 	file, err := os.Open("tests/test.txt")
 	if err != nil {
