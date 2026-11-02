@@ -8,10 +8,7 @@ import (
 
 func TestByteCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
-	file, err := os.Open("../tests/test.txt")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	file := openTestFile(t, "../tests/test.txt")
 
 	// wc -c tests/test.txt
 	expected := 342190
@@ -27,10 +24,7 @@ func TestByteCounting(t *testing.T) {
 
 func TestLineCounting(t *testing.T) {
 	buf := make([]byte, 32*1024)
-	file, err := os.Open("../tests/test.txt")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	file := openTestFile(t, "../tests/test.txt")
 
 	// wc -l tests/test.txt
 	expected := 7145
@@ -42,4 +36,19 @@ func TestLineCounting(t *testing.T) {
 	if expected != got {
 		t.Fatalf("lines counted incorrectly: expected %d, got %d", expected, got)
 	}
+}
+
+func openTestFile(t *testing.T, filename string) *os.File {
+	t.Helper()
+
+	file, err := os.Open(filename)
+	if err != nil {
+		t.Fatalf("failed to open test file: %v", err)
+	}
+
+	t.Cleanup(func() {
+		file.Close()
+	})
+
+	return file
 }
