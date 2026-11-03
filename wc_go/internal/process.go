@@ -32,3 +32,7 @@ func CountBytes(buf []byte, file *os.File) (int, error) {
 func CountLines(buf []byte, file *os.File) (int, error) {
 	return 0, nil
 }
+
+func CountWords(buf []byte, file *os.File) (int, error) {
+	return 0, nil
+}

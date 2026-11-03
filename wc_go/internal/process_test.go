@@ -38,6 +38,22 @@ func TestLineCounting(t *testing.T) {
 	}
 }
 
+func TestWordCounting(t *testing.T) {
+	buf := make([]byte, 32*1024)
+	file := openTestFile(t, "../tests/test.txt")
+
+	// wc -w tests/test.txt
+	expected := 58164
+	got, err := internal.CountWords(buf, file)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if expected != got {
+		t.Fatalf("words counted incorrectly: expected %d, got %d", expected, got)
+	}
+}
+
 func openTestFile(t *testing.T, filename string) *os.File {
 	t.Helper()
 
