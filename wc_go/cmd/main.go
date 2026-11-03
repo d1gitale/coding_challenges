@@ -61,7 +61,7 @@ func main() {
 		output += fmt.Sprintf("%d ", lines)
 	}
 	if *countWords {
-		words, err := internal.CountWords(buf, file)
+		words, err := internal.CountWords(file)
 		if err != nil {
 			log.Fatalf("failed to count words: %v", err)
 		}
@@ -69,7 +69,7 @@ func main() {
 		output += fmt.Sprintf("%d ", words)
 	}
 	if *countChars {
-		chars, err := internal.CountChars(buf, file)
+		chars, err := internal.CountChars(file)
 		if err != nil {
 			log.Fatalf("failed to count chars: %v", err)
 		}

@@ -57,7 +57,7 @@ func CountLines(buf []byte, file *os.File) (int, error) {
 	}
 }
 
-func CountWords(buf []byte, file *os.File) (int, error) {
+func CountWords(file *os.File) (int, error) {
 	file.Seek(0, io.SeekStart)
 
 	scanner := bufio.NewScanner(file)
@@ -75,7 +75,7 @@ func CountWords(buf []byte, file *os.File) (int, error) {
 	return words, nil
 }
 
-func CountChars(buf []byte, file *os.File) (int, error) {
+func CountChars(file *os.File) (int, error) {
 	file.Seek(0, io.SeekStart)
 
 	scanner := bufio.NewScanner(file)
