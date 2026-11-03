@@ -54,6 +54,25 @@ func TestWordCounting(t *testing.T) {
 	}
 }
 
+func TestCharCounting(t *testing.T) {
+	buf := make([]byte, 32*1024)
+	files := []string{"../tests/test.txt", "../tests/multibyte.txt"}
+	expected := []int{339292, 113}
+
+	for i, fn := range files {
+		file := openTestFile(t, fn)
+		expected := expected[i]
+		got, err := internal.CountChars(buf, file)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if expected != got {
+			t.Fatalf("chars counted incorrectly: expected %d, got %d", expected, got)
+		}
+	}
+}
+
 func openTestFile(t *testing.T, filename string) *os.File {
 	t.Helper()
 

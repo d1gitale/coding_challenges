@@ -36,3 +36,7 @@ func CountLines(buf []byte, file *os.File) (int, error) {
 func CountWords(buf []byte, file *os.File) (int, error) {
 	return 0, nil
 }
+
+func CountChars(buf []byte, file *os.File) (int, error) {
+	return 0, nil
+}
