@@ -42,10 +42,9 @@ func main() {
 	}
 
 	var output string
-	buf := make([]byte, 32*1024)
 
 	if *countBytes {
-		size, err := internal.CountBytes(buf, file)
+		size, err := internal.CountBytes(file)
 		if err != nil {
 			log.Fatalf("failed to count bytes: %v", err)
 		}
@@ -53,7 +52,7 @@ func main() {
 		output += fmt.Sprintf("%d ", size)
 	}
 	if *countLines {
-		lines, err := internal.CountLines(buf, file)
+		lines, err := internal.CountLines(file)
 		if err != nil {
 			log.Fatalf("failed to count lines: %v", err)
 		}

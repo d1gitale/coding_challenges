@@ -2,59 +2,48 @@ package internal
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
 )
 
-func CountBytes(buf []byte, file *os.File) (int, error) {
+func CountBytes(file *os.File) (int, error) {
 	file.Seek(0, io.SeekStart)
-	size := 0
-	var (
-		n   int
-		err error
-	)
 
-	for {
-		n, err = file.Read(buf)
-		if err != nil {
-			break
-		}
+	size := 0
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanBytes)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		n := len(line)
 
 		size += n
 	}
 
-	if err == io.EOF {
-		return size, nil
-	} else {
+	if err := scanner.Err(); err != nil {
 		return 0, fmt.Errorf("failed to read file %s: %v", file.Name(), err)
 	}
+
+	return size, nil
 }
 
-func CountLines(buf []byte, file *os.File) (int, error) {
+func CountLines(file *os.File) (int, error) {
 	file.Seek(0, io.SeekStart)
 
-	var (
-		read int
-		err  error
-	)
-
 	lines := 0
-	for {
-		read, err = file.Read(buf)
-		if err != nil {
-			break
-		}
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-		lines += bytes.Count(buf[:read], []byte("\n"))
+	for scanner.Scan() {
+		lines++
 	}
 
-	if err == io.EOF {
-		return lines, nil
-	} else {
+	if err := scanner.Err(); err != nil {
 		return 0, fmt.Errorf("failed to read file %s: %v", file.Name(), err)
 	}
+
+	return lines, nil
 }
 
 func CountWords(file *os.File) (int, error) {

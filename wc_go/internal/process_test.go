@@ -7,12 +7,11 @@ import (
 )
 
 func TestByteCounting(t *testing.T) {
-	buf := make([]byte, 32*1024)
 	file := openTestFile(t, "../tests/test.txt")
 
 	// wc -c tests/test.txt
 	expected := 342190
-	got, err := internal.CountBytes(buf, file)
+	got, err := internal.CountBytes(file)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -23,12 +22,11 @@ func TestByteCounting(t *testing.T) {
 }
 
 func TestLineCounting(t *testing.T) {
-	buf := make([]byte, 32*1024)
 	file := openTestFile(t, "../tests/test.txt")
 
 	// wc -l tests/test.txt
 	expected := 7145
-	got, err := internal.CountLines(buf, file)
+	got, err := internal.CountLines(file)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -55,6 +53,8 @@ func TestWordCounting(t *testing.T) {
 
 func TestCharCounting(t *testing.T) {
 	files := []string{"../tests/test.txt", "../tests/multibyte.txt"}
+	// wc -m tests/test.txt
+	// wc -m tests/multibyte.txt
 	expected := []int{339292, 113}
 
 	for i, fn := range files {
