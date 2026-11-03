@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"wc/internal"
@@ -44,70 +41,37 @@ func main() {
 		fn = "stdin"
 	}
 
-	var (
-		read   int
-		output string
-	)
-
+	var output string
 	buf := make([]byte, 32*1024)
 
 	if *countBytes {
 		size, err := internal.CountBytes(buf, file)
 		if err != nil {
 			log.Fatalf("failed to count bytes: %v", err)
-		} else {
-			output += fmt.Sprintf("%d ", size)
 		}
+
+		output += fmt.Sprintf("%d ", size)
 	}
 	if *countLines {
-		file.Seek(0, io.SeekStart)
-
-		lines := 0
-		for {
-			read, err = file.Read(buf)
-			if err != nil {
-				break
-			}
-
-			lines += bytes.Count(buf[:read], []byte("\n"))
+		lines, err := internal.CountLines(buf, file)
+		if err != nil {
+			log.Fatalf("failed to count lines: %v", err)
 		}
 
-		if err == io.EOF {
-			output += fmt.Sprintf("%d ", lines)
-		} else {
-			log.Fatalf("failed to read file %s: %v", fn, err)
-		}
+		output += fmt.Sprintf("%d ", lines)
 	}
 	if *countWords {
-		file.Seek(0, io.SeekStart)
-
-		scanner := bufio.NewScanner(file)
-		scanner.Split(bufio.ScanWords)
-
-		words := 0
-		for scanner.Scan() {
-			words++
-		}
-
-		if err := scanner.Err(); err != nil {
-			log.Fatalf("failed to read the file %s: %v", fn, err)
+		words, err := internal.CountWords(buf, file)
+		if err != nil {
+			log.Fatalf("failed to count words: %v", err)
 		}
 
 		output += fmt.Sprintf("%d ", words)
 	}
 	if *countChars {
-		file.Seek(0, io.SeekStart)
-
-		scanner := bufio.NewScanner(file)
-		scanner.Split(bufio.ScanRunes)
-
-		chars := 0
-		for scanner.Scan() {
-			chars++
-		}
-
-		if err := scanner.Err(); err != nil {
-			log.Fatalf("failed to read the file %s: %v", fn, err)
+		chars, err := internal.CountChars(buf, file)
+		if err != nil {
+			log.Fatalf("failed to count chars: %v", err)
 		}
 
 		output += fmt.Sprintf("%d ", chars)
