@@ -10,10 +10,10 @@ import (
 )
 
 type Result struct {
-	bytes int
-	lines int
-	words int
-	chars int
+	Bytes int
+	Lines int
+	Words int
+	Chars int
 }
 
 func CountBytes(file *os.File) (int, error) {
