@@ -9,7 +9,6 @@ import (
 func TestByteCounting(t *testing.T) {
 	file := openTestFile(t, "../tests/test.txt")
 
-	// wc -c tests/test.txt
 	expected := 342190
 	got, err := internal.CountBytes(file)
 	if err != nil {
@@ -24,7 +23,6 @@ func TestByteCounting(t *testing.T) {
 func TestLineCounting(t *testing.T) {
 	file := openTestFile(t, "../tests/test.txt")
 
-	// wc -l tests/test.txt
 	expected := 7145
 	got, err := internal.CountLines(file)
 	if err != nil {
@@ -39,7 +37,6 @@ func TestLineCounting(t *testing.T) {
 func TestWordCounting(t *testing.T) {
 	file := openTestFile(t, "../tests/test.txt")
 
-	// wc -w tests/test.txt
 	expected := 58164
 	got, err := internal.CountWords(file)
 	if err != nil {
@@ -53,8 +50,6 @@ func TestWordCounting(t *testing.T) {
 
 func TestCharCounting(t *testing.T) {
 	files := []string{"../tests/test.txt", "../tests/multibyte.txt"}
-	// wc -m tests/test.txt
-	// wc -m tests/multibyte.txt
 	expected := []int{339292, 113}
 
 	for i, fn := range files {
@@ -73,20 +68,18 @@ func TestCharCounting(t *testing.T) {
 
 func TestEverythingCounting(t *testing.T) {
 	files := []string{"../tests/test.txt", "../tests/multibyte.txt"}
-	// wc -clwm tests/test.txt
-	// wc -clwm tests/multibyte.txt
 	expected := []internal.Result{
 		internal.Result{
-			"bytes": 342190,
-			"lines": 7145,
-			"words": 58164,
-			"chars": 339292,
+			Bytes: 342190,
+			Lines: 7145,
+			Words: 58164,
+			Chars: 339292,
 		},
 		internal.Result{
-			"bytes": 285,
-			"lines": 11,
-			"words": 11,
-			"chars": 113,
+			Bytes: 285,
+			Lines: 11,
+			Words: 11,
+			Chars: 113,
 		},
 	}
 
@@ -98,10 +91,17 @@ func TestEverythingCounting(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		for k, _ := range expected {
-			if expected[k] != got[k] {
-				t.Fatalf("%s counted incorrectly: expected %d, got %d", k, expected[k], got[k])
-			}
+		if expected.Bytes != got.Bytes {
+			t.Fatalf("bytes counted incorrectly: expected %d, got %d", expected.Bytes, got.Bytes)
+		}
+		if expected.Lines != got.Lines {
+			t.Fatalf("lines counted incorrectly: expected %d, got %d", expected.Lines, got.Lines)
+		}
+		if expected.Words != got.Words {
+			t.Fatalf("words counted incorrectly: expected %d, got %d", expected.Words, got.Words)
+		}
+		if expected.Chars != got.Chars {
+			t.Fatalf("chars counted incorrectly: expected %d, got %d", expected.Chars, got.Chars)
 		}
 	}
 }

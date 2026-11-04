@@ -29,16 +29,16 @@ func main() {
 		}
 
 		if *flags.CountBytes {
-			output += fmt.Sprintf("%d ", res["bytes"])
+			output += fmt.Sprintf("%d ", res.Bytes)
 		}
 		if *flags.CountLines {
-			output += fmt.Sprintf("%d ", res["lines"])
+			output += fmt.Sprintf("%d ", res.Lines)
 		}
 		if *flags.CountWords {
-			output += fmt.Sprintf("%d ", res["words"])
+			output += fmt.Sprintf("%d ", res.Words)
 		}
 		if *flags.CountChars {
-			output += fmt.Sprintf("%d ", res["chars"])
+			output += fmt.Sprintf("%d ", res.Chars)
 		}
 	} else {
 		if *flags.CountBytes {
