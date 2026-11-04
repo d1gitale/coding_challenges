@@ -9,12 +9,7 @@ import (
 	"unicode/utf8"
 )
 
-type Result struct {
-	Bytes int
-	Lines int
-	Words int
-	Chars int
-}
+type Result map[string]int
 
 func CountBytes(file *os.File) (int, error) {
 	file.Seek(0, io.SeekStart)
@@ -91,7 +86,7 @@ func CountChars(file *os.File) (int, error) {
 	return chars, nil
 }
 
-func CountEverything(file *os.File) (*Result, error) {
+func CountEverything(file *os.File) (Result, error) {
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
@@ -109,15 +104,15 @@ func CountEverything(file *os.File) (*Result, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return &Result{}, fmt.Errorf("failed to count everything in file %s: %v", file.Name(), err)
+		return Result{}, fmt.Errorf("failed to count everything in file %s: %v", file.Name(), err)
 	}
 
 	res := Result{
-		bytes,
-		lines,
-		words,
-		chars,
+		"bytes": bytes,
+		"lines": lines,
+		"words": words,
+		"chars": chars,
 	}
 
-	return &res, nil
+	return res, nil
 }
