@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"wc/cmd"
 	"wc/internal"
 	"wc/pkg"
@@ -21,37 +22,57 @@ func main() {
 
 	var output string
 
-	if *flags.CountBytes {
-		size, err := internal.CountBytes(file)
+	if file == os.Stdin {
+		res, err := internal.CountEverything(file)
 		if err != nil {
-			log.Fatalf("failed to count bytes: %v", err)
+			log.Fatalf("failed to count everything: %v", err)
 		}
 
-		output += fmt.Sprintf("%d ", size)
-	}
-	if *flags.CountLines {
-		lines, err := internal.CountLines(file)
-		if err != nil {
-			log.Fatalf("failed to count lines: %v", err)
+		if *flags.CountBytes {
+			output += fmt.Sprintf("%d ", res["bytes"])
 		}
-
-		output += fmt.Sprintf("%d ", lines)
-	}
-	if *flags.CountWords {
-		words, err := internal.CountWords(file)
-		if err != nil {
-			log.Fatalf("failed to count words: %v", err)
+		if *flags.CountLines {
+			output += fmt.Sprintf("%d ", res["lines"])
 		}
-
-		output += fmt.Sprintf("%d ", words)
-	}
-	if *flags.CountChars {
-		chars, err := internal.CountChars(file)
-		if err != nil {
-			log.Fatalf("failed to count chars: %v", err)
+		if *flags.CountWords {
+			output += fmt.Sprintf("%d ", res["words"])
 		}
+		if *flags.CountChars {
+			output += fmt.Sprintf("%d ", res["chars"])
+		}
+	} else {
+		if *flags.CountBytes {
+			size, err := internal.CountBytes(file)
+			if err != nil {
+				log.Fatalf("failed to count bytes: %v", err)
+			}
 
-		output += fmt.Sprintf("%d ", chars)
+			output += fmt.Sprintf("%d ", size)
+		}
+		if *flags.CountLines {
+			lines, err := internal.CountLines(file)
+			if err != nil {
+				log.Fatalf("failed to count lines: %v", err)
+			}
+
+			output += fmt.Sprintf("%d ", lines)
+		}
+		if *flags.CountWords {
+			words, err := internal.CountWords(file)
+			if err != nil {
+				log.Fatalf("failed to count words: %v", err)
+			}
+
+			output += fmt.Sprintf("%d ", words)
+		}
+		if *flags.CountChars {
+			chars, err := internal.CountChars(file)
+			if err != nil {
+				log.Fatalf("failed to count chars: %v", err)
+			}
+
+			output += fmt.Sprintf("%d ", chars)
+		}
 	}
 
 	output += fmt.Sprintf("%s\n", file.Name())
