@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
-	"unicode/utf8"
+	"unicode"
 )
 
 type Result map[string]int
@@ -87,24 +86,39 @@ func CountChars(file *os.File) (int, error) {
 }
 
 func CountEverything(file *os.File) (Result, error) {
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
+	reader := bufio.NewReader(file)
 
 	bytes := 0
 	lines := 0
 	words := 0
 	chars := 0
+	inWord := false
 
-	for scanner.Scan() {
-		data := scanner.Text()
-		bytes += len(data)
-		lines++
-		words += strings.Count(data, " ")
-		chars += utf8.RuneCountInString(data)
-	}
+	for {
+		r, n, err := reader.ReadRune()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return Result{}, fmt.Errorf("failed to read rune: %v", err)
+		}
 
-	if err := scanner.Err(); err != nil {
-		return Result{}, fmt.Errorf("failed to count everything in file %s: %v", file.Name(), err)
+		bytes += n
+
+		if r == '\n' {
+			lines++
+		}
+
+		if unicode.IsSpace(r) {
+			inWord = false
+		} else {
+			if !inWord {
+				words++
+				inWord = true
+			}
+		}
+
+		chars++
 	}
 
 	res := Result{
