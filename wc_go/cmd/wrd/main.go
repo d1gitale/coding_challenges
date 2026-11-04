@@ -1,12 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
-	"os"
 	"wc/cmd"
 	"wc/internal"
+	"wc/pkg"
 )
 
 func main() {
@@ -14,23 +13,11 @@ func main() {
 
 	flags := cmd.ProcessFlags()
 
-	var (
-		file *os.File
-		fn   string
-		err  error
-	)
-	if flag.NArg() != 0 {
-		fn = flag.Arg(0)
-
-		file, err = os.Open(fn)
-		if err != nil {
-			log.Fatalf("failed to open file %s: %v", fn, err)
-		}
-		defer file.Close()
-	} else {
-		file = os.Stdin
-		fn = "stdin"
+	file, err := pkg.OpenFileOrStdin()
+	if err != nil {
+		log.Fatalf("unexpected error: %v", err)
 	}
+	defer file.Close()
 
 	var output string
 
@@ -67,6 +54,6 @@ func main() {
 		output += fmt.Sprintf("%d ", chars)
 	}
 
-	output += fmt.Sprintf("%s\n", fn)
+	output += fmt.Sprintf("%s\n", file.Name())
 	fmt.Print(output)
 }
