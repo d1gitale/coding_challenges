@@ -71,6 +71,41 @@ func TestCharCounting(t *testing.T) {
 	}
 }
 
+func TestEverythingCounting(t *testing.T) {
+	files := []string{"../tests/test.txt", "../tests/multibyte.txt"}
+	// wc -clwm tests/test.txt
+	// wc -clwm tests/multibyte.txt
+	expected := []internal.Result{
+		internal.Result{
+			"bytes": 342190,
+			"lines": 7145,
+			"words": 58164,
+			"chars": 339292,
+		},
+		internal.Result{
+			"bytes": 285,
+			"lines": 11,
+			"words": 11,
+			"chars": 113,
+		},
+	}
+
+	for i, fn := range files {
+		file := openTestFile(t, fn)
+		expected := expected[i]
+		got, err := internal.CountEverything(file)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		for k, _ := range expected {
+			if expected[k] != got[k] {
+				t.Fatalf("%s counted incorrectly: expected %d, got %d", k, expected[k], got[k])
+			}
+		}
+	}
+}
+
 func openTestFile(t *testing.T, filename string) *os.File {
 	t.Helper()
 
